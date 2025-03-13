@@ -1,0 +1,1 @@
+# ActivitateStructuriDate_Apetroaei_Catalina_2025
