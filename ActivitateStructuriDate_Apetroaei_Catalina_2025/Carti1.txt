@@ -1,0 +1,11 @@
+1,Ultima noapte de dragoste,39.90,328
+2,Mandrie si prejudecata,29.50,432
+3,Crima si pedeapsa,44.00,671
+4,Don Quijote,50.00,863
+5,Procesul,35.00,256
+6,Enigma Otiliei,27.75,496
+7,Toate panzele sus!,31.99,418
+8,Ion,38.00,520
+9,Harry Potter si piatra filozofala,42.50,320
+10,Micul Print,24.99,96111
+11,Amintiri din copilarie,33.50,245
