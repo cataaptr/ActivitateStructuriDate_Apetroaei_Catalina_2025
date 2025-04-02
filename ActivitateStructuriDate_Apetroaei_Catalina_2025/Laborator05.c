@@ -108,8 +108,8 @@ Lista citireLDMasiniDinFisier(const char* numeFisier) {
 	lista.primul = NULL;
 	lista.ultimul = NULL;
 	while (!feof(f)) {
-		//adaugaMasinaInLista(&lista, citireMasinaDinFisier(f));
-		adaugaLaInceputInLista(&lista, citireMasinaDinFisier(f));
+		adaugaMasinaInLista(&lista, citireMasinaDinFisier(f));
+		//adaugaLaInceputInLista(&lista, citireMasinaDinFisier(f));
 	}
 	fclose(f);
 	return lista;
@@ -143,25 +143,81 @@ float calculeazaPretMediu(Lista lista) {
 	return suma/contor;
 }
 
-void stergeMasinaDupaID(/*lista masini*/ int id) {
-	//sterge masina cu id-ul primit.
-	//tratati situatia ca masina se afla si pe prima pozitie, si pe ultima pozitie
+void stergeMasinaDupaID(Lista* lista, int id) {
+	if (lista->primul == NULL)
+		return;
+
+	Nod* p = lista->primul;
+	while (p != NULL && p->info.id != id) {
+		p = p->urmator;
+	}
+	if (p == NULL)
+		return;
+
+	if (p->precedent == NULL) { // este primul
+		lista->primul = p->urmator;
+		if (lista->primul != NULL)
+			lista->primul->precedent = NULL;
+	}
+	else {
+		p->precedent->urmator = p->urmator;
+	}
+
+	if (p->urmator == NULL) { // este ultimul
+		lista->ultimul = p->precedent;
+	}
+	else {
+		p->urmator->precedent = p->precedent;
+	}
+
+	free(p->info.model);
+	free(p->info.numeSofer);
+	free(p);
 }
 
-char* getNumeSoferMasinaScumpa(/*lista dublu inlantuita*/) {
-	//cauta masina cea mai scumpa si 
-	//returneaza numele soferului acestei maasini.
+
+char* getNumeSoferMasinaScumpa(Lista lista) {
+	if (lista.primul == NULL)
+		return NULL;
+
+	Nod* p = lista.primul;
+	Nod* maxNod = p;
+
+	while (p != NULL) {
+		if (p->info.pret > maxNod->info.pret) {
+			maxNod = p;
+		}
+		p = p->urmator;
+	}
+
+	if (maxNod->info.numeSofer != NULL) {
+		char* nume = (char*)malloc(strlen(maxNod->info.numeSofer) + 1);
+		strcpy(nume, maxNod->info.numeSofer);
+		return nume;
+	}
 	return NULL;
 }
+
 
 int main() {
 	Lista lista=citireLDMasiniDinFisier("masini.txt");
 	//afisareListaMasiniInceput(lista);
 	afisareListaMasiniFinal(lista);
 
-	printf("\n\nValoare medie: ");
+	printf("\n\nPret mediu: ");
 	float pretMediu = calculeazaPretMediu(lista);
 	printf("%2.f", pretMediu);
+
+	char* sofer = getNumeSoferMasinaScumpa(lista);
+	if (sofer) {
+		printf("\nSoferul cu masina cea mai scumpa: %s\n", sofer);
+		free(sofer);
+	}
+	
+	printf("\n\nStergere:\n");
+	stergeMasinaDupaID(&lista, 8);
+	afisareListaMasiniInceput(lista);
+
 
 	dezalocareLDMasini(&lista);
 
@@ -171,7 +227,6 @@ int main() {
 
 /*
 * TEST:
-* -pana la hashTable
 * -pana la hashTable
 * -creare structura + inserare + procesare (idk medie) + afisare + dezalocare
 * -combinatii structuri (iei din vector si sa o pui in lista, invers)
